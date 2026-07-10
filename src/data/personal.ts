@@ -25,8 +25,8 @@ export const profile = {
     zh: "我是 Richard，一名产品经理，专注于 AI 工具、Agent 系统、产品设计和实用软件。",
   },
   now: {
-    en: "Current focus: Clip Loop, usAIge, OneMind, and this personal terminal.",
-    zh: "当前重点：Clip Loop、usAIge、OneMind，以及这个个人终端。",
+    en: "Current focus: refining practical AI tools, native macOS and iOS apps, and this public terminal.",
+    zh: "当前重点：持续打磨实用 AI 工具、macOS 与 iOS 原生应用，以及这个公开终端。",
   },
   projects: [
     {
