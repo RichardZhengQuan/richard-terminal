@@ -56,6 +56,7 @@ export const profile = {
     },
     {
       name: "usAIge",
+      website: "https://usaige-macos.richardqz.chatgpt.site/#install",
       github: "https://github.com/RichardZhengQuan/usAIge",
       description: {
         en: "Always-on macOS HUD for Codex and ChatGPT usage limits.",
