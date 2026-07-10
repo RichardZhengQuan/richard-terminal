@@ -18,7 +18,8 @@ type TerminalLine =
 
 type TerminalOutput =
   | string
-  | { links: Array<{ label: string; ariaLabel: string; href: string }> };
+  | { links: Array<{ label: string; ariaLabel: string; href: string }> }
+  | { contact: { label: string; value: string; href: string } };
 
 const LOADING_DURATION_MS = 420;
 const LANGUAGE_STORAGE_KEY = "richard-terminal-language";
@@ -115,7 +116,13 @@ function buildCommandResult(command: CommandKey | "en" | "zh" | undefined, langu
   }
 
   if (command === "contact") {
-    return profile.contact.map((item) => `${item.label[language]}: ${item.value}`);
+    return profile.contact.map((item) => ({
+      contact: {
+        label: item.label[language],
+        value: item.value,
+        href: item.href,
+      },
+    }));
   }
 
   if (command === "en" || command === "zh") {
@@ -344,6 +351,24 @@ function TerminalEntry({ line }: { line: TerminalLine }) {
     <div className={line.type === "system" ? "mb-6 text-terminal-green" : "mb-6 text-[#d9fff0]"}>
       {line.lines.map((output, index) => {
         if (typeof output !== "string") {
+          if ("contact" in output) {
+            const external = output.contact.href.startsWith("http");
+
+            return (
+              <p key={`${line.id}-${index}`}>
+                {output.contact.label}: {" "}
+                <a
+                  href={output.contact.href}
+                  target={external ? "_blank" : undefined}
+                  rel={external ? "noreferrer" : undefined}
+                  className="text-terminal-cyan underline decoration-terminal-line underline-offset-4 transition hover:decoration-terminal-cyan focus:outline-none focus:ring-2 focus:ring-terminal-cyan/60"
+                >
+                  {output.contact.value}
+                </a>
+              </p>
+            );
+          }
+
           return (
             <div key={`${line.id}-${index}`} className="my-2 ml-4 flex flex-wrap gap-2">
               {output.links.map((link) => (
