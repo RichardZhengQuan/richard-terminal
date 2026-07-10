@@ -31,6 +31,7 @@ export const profile = {
   projects: [
     {
       name: "Clip Loop",
+      website: "https://cliploop-alpha.richardqz.chatgpt.site/",
       github: "https://github.com/RichardZhengQuan/Cliploop",
       description: {
         en: "Native macOS and iOS study app for caption-based clips and looped playback.",
