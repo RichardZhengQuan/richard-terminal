@@ -1,0 +1,21 @@
+# dependencies
+/node_modules
+
+# framework output
+/.next
+/.vinext
+/dist
+/out
+
+# local hosting state
+/.wrangler
+/outputs
+/work
+
+# environment and logs
+.env*
+*.log
+.DS_Store
+
+# generated TypeScript state
+*.tsbuildinfo
