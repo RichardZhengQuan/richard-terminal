@@ -35,8 +35,8 @@ input {
 
 @keyframes binary-fall {
   0% {
-    transform: translateY(-42%);
-    opacity: 0;
+    transform: translateY(-50%);
+    opacity: 0.45;
   }
 
   18% {
@@ -44,8 +44,14 @@ input {
   }
 
   100% {
-    transform: translateY(42%);
+    transform: translateY(0);
     opacity: 0.35;
+  }
+}
+
+@media (max-width: 639px) {
+  .binary-rain-column:nth-child(even) {
+    display: none;
   }
 }
 
