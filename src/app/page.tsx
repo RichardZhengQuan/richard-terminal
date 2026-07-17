@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import {
   commandAliases,
@@ -24,12 +25,30 @@ type TerminalOutput =
 const LOADING_DURATION_MS = 420;
 const LANGUAGE_STORAGE_KEY = "richard-terminal-language";
 
-const binaryColumns = Array.from({ length: 42 }, (_, column) => ({
-  id: column,
-  delay: `${(column % 9) * 0.09}s`,
-  duration: `${1.1 + (column % 7) * 0.12}s`,
-  bits: Array.from({ length: 24 }, (_, bit) => ((column + bit) % 3 === 0 ? "1" : "0")).join(""),
-}));
+const BINARY_BITS_PER_COLUMN = 320;
+const BINARY_COLUMN_COUNT = 56;
+
+const binaryColumns = Array.from({ length: BINARY_COLUMN_COUNT }, (_, column) => {
+  const trailLength = 7 + ((column * 5) % 12);
+  const gapLength = 16 + ((column * 7) % 24);
+  const cycleLength = trailLength + gapLength;
+  const phase = (column * 17) % cycleLength;
+
+  return {
+    id: column,
+    delay: `${-((column % 11) * 0.17)}s`,
+    duration: `${2.2 + (column % 7) * 0.18}s`,
+    bits: Array.from({ length: BINARY_BITS_PER_COLUMN }, (_, bit) => {
+      const trailPosition = (bit + phase) % cycleLength;
+
+      if (trailPosition >= trailLength) {
+        return " ";
+      }
+
+      return (column + bit) % 3 === 0 ? "1" : "0";
+    }).join(""),
+  };
+});
 
 let lineId = 0;
 
@@ -251,7 +270,16 @@ export default function Home() {
               <span className="h-3 w-3 rounded-full bg-[#ff5f57]" aria-hidden="true" />
               <span className="h-3 w-3 rounded-full bg-[#ffbd2e]" aria-hidden="true" />
               <span className="h-3 w-3 rounded-full bg-terminal-green" aria-hidden="true" />
-              <span className="ml-1 text-xs uppercase tracking-[0.18em] text-terminal-dim">
+              <Image
+                src="/logo.png"
+                width={32}
+                height={32}
+                alt="Richard logo"
+                priority
+                unoptimized
+                className="ml-1 rounded-[8px] ring-1 ring-terminal-green/30"
+              />
+              <span className="text-xs uppercase tracking-[0.18em] text-terminal-dim">
                 {activeCopy.status}
               </span>
             </div>
@@ -422,7 +450,7 @@ function BinaryIntro({
         {binaryColumns.map((column) => (
           <span
             key={column.id}
-            className="animate-[binary-fall_var(--duration)_linear_infinite] whitespace-pre text-left text-[13px] leading-4 text-terminal-green/70 [text-shadow:0_0_12px_rgba(73,255,154,0.8)]"
+            className="binary-rain-column animate-[binary-fall_var(--duration)_linear_infinite] whitespace-pre text-left text-[clamp(13px,0.9vw,18px)] leading-[1.15] text-terminal-green/70 [text-shadow:0_0_14px_rgba(73,255,154,0.85)]"
             style={
               {
                 "--duration": column.duration,
@@ -434,8 +462,19 @@ function BinaryIntro({
           </span>
         ))}
       </div>
-      <div className="relative z-10 border border-terminal-green/40 bg-black/75 px-5 py-3 text-sm uppercase tracking-[0.24em] text-terminal-cyan shadow-terminal">
-        {status}
+      <div className="relative z-10 flex flex-col items-center gap-5">
+        <Image
+          src="/logo.png"
+          width={128}
+          height={128}
+          alt=""
+          priority
+          unoptimized
+          className="rounded-[28px] shadow-[0_0_42px_rgba(73,255,154,0.3)] ring-1 ring-terminal-green/50"
+        />
+        <div className="border border-terminal-green/40 bg-black/75 px-5 py-3 text-sm uppercase tracking-[0.24em] text-terminal-cyan shadow-terminal">
+          {status}
+        </div>
       </div>
     </button>
   );
