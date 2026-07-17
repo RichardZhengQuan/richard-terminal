@@ -127,6 +127,11 @@ export const profile = {
       value: "x.com/AllRichRich",
       href: "https://x.com/AllRichRich",
     },
+    {
+      label: { en: "Vibeloft", zh: "Vibeloft" },
+      value: "vibeloft.ai/profile/richquan",
+      href: "https://vibeloft.ai/profile/richquan",
+    },
   ],
 } satisfies {
   name: string;

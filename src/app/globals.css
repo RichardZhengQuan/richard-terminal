@@ -49,6 +49,21 @@ input {
   }
 }
 
+@keyframes not-found-rain {
+  from {
+    transform: translateY(-18vh);
+  }
+
+  to {
+    transform: translateY(108vh);
+  }
+}
+
+.not-found-rain-column {
+  animation: not-found-rain var(--rain-duration) linear infinite;
+  text-shadow: 0 0 12px rgba(73, 255, 154, 0.5);
+}
+
 @media (max-width: 639px) {
   .binary-rain-column:nth-child(even) {
     display: none;

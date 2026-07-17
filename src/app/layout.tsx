@@ -1,39 +1,34 @@
 import type { Metadata } from "next";
-import { headers } from "next/headers";
 import "./globals.css";
 
 const title = "Richard's Terminal";
 const description = "Richard's terminal-style personal homepage and project index.";
+const siteUrl = new URL("https://pmrichq.com");
 
-export async function generateMetadata(): Promise<Metadata> {
-  const requestHeaders = await headers();
-  const host = requestHeaders.get("x-forwarded-host") ?? requestHeaders.get("host");
-  const localHost = host?.startsWith("localhost") || host?.startsWith("127.0.0.1");
-  const protocol = requestHeaders.get("x-forwarded-proto") ?? (localHost ? "http" : "https");
-  const imageUrl = host ? `${protocol}://${host}/og.png` : undefined;
-
-  return {
+export const metadata: Metadata = {
+  metadataBase: siteUrl,
+  title,
+  description,
+  alternates: { canonical: "/" },
+  icons: {
+    icon: [{ url: "/favicon.png", type: "image/png", sizes: "256x256" }],
+    shortcut: "/favicon.png",
+    apple: "/favicon.png",
+  },
+  openGraph: {
     title,
     description,
-    icons: {
-      icon: [{ url: "/favicon.png", type: "image/png", sizes: "110x110" }],
-      shortcut: "/favicon.png",
-      apple: "/favicon.png",
-    },
-    openGraph: {
-      title,
-      description,
-      type: "website",
-      images: imageUrl ? [{ url: imageUrl, width: 1659, height: 948 }] : [],
-    },
-    twitter: {
-      card: "summary_large_image",
-      title,
-      description,
-      images: imageUrl ? [imageUrl] : [],
-    },
-  };
-}
+    type: "website",
+    url: "/",
+    images: [{ url: "/og.png", width: 1659, height: 948 }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title,
+    description,
+    images: ["/og.png"],
+  },
+};
 
 export default function RootLayout({
   children,
@@ -42,6 +37,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <script
+          defer
+          src="https://vibeloft.ai/telemetry/v1.js"
+          data-vl-product-id="a6ce40d7-03fc-4948-9923-f4e89efb26a8"
+          data-vl-auth-key="vl_web.ACiOBBK-QNHOesd8XDDTk7Bs86kP5vsrnr2dhx80swM"
+        />
+      </head>
       <body>{children}</body>
     </html>
   );
