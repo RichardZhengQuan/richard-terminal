@@ -19,3 +19,8 @@
 
 # generated TypeScript state
 *.tsbuildinfo
+
+# local visual QA captures
+/design-qa-*.png
+/design-qa-*.jpg
+/intro-*.png

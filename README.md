@@ -37,6 +37,14 @@ Build the Sites-compatible production bundle:
 pnpm build
 ```
 
+Build the static bundle used by the VPS deployment:
+
+```bash
+pnpm build:vps
+```
+
+The deployable files are written to `out/`.
+
 ## Editing personal content
 
 All profile copy, projects, contact details, localized interface text, and command aliases live in [`src/data/personal.ts`](src/data/personal.ts).
