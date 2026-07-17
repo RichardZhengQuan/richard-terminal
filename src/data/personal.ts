@@ -31,7 +31,7 @@ export const profile = {
   projects: [
     {
       name: "Clip Loop",
-      website: "https://cliploop-alpha.richardqz.chatgpt.site/",
+      website: "https://pmrichq.com/project/cliploop/",
       github: "https://github.com/RichardZhengQuan/Cliploop",
       description: {
         en: "Native macOS and iOS study app for caption-based clips and looped playback.",
@@ -56,7 +56,7 @@ export const profile = {
     },
     {
       name: "usAIge",
-      website: "https://usaige-macos.richardqz.chatgpt.site/",
+      website: "https://pmrichq.com/project/usaige/",
       github: "https://github.com/RichardZhengQuan/usAIge",
       description: {
         en: "Always-on macOS HUD for Codex and ChatGPT usage limits.",
