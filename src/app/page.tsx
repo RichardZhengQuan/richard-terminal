@@ -1,7 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
+import { FormEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import TerminalRain from "./terminal-rain";
 import {
   commandAliases,
   copy,
@@ -15,40 +16,26 @@ type TerminalLine =
   | { id: number; type: "system"; lines: string[] }
   | { id: number; type: "command"; text: string }
   | { id: number; type: "loading"; text: string }
-  | { id: number; type: "result"; lines: TerminalOutput[] };
+  | { id: number; type: "result"; lines: TerminalOutput[]; isStreaming?: boolean };
 
 type TerminalOutput =
   | string
-  | { links: Array<{ label: string; ariaLabel: string; href: string }> }
-  | { contact: { label: string; value: string; href: string } };
+  | {
+      links: Array<{ label: string; ariaLabel: string; href: string }>;
+      visibleLabels?: string[];
+    }
+  | {
+      contact: { label: string; value: string; href: string };
+      visibleLength?: number;
+    };
 
 const LOADING_DURATION_MS = 420;
+const COMMAND_KEYSTROKE_MS = 58;
+const OUTPUT_TICK_MS = 16;
+const OUTPUT_CHARS_PER_TICK = 2;
+const OUTPUT_LINE_PAUSE_MS = 72;
+const INTRO_DURATION_MS = 3000;
 const LANGUAGE_STORAGE_KEY = "richard-terminal-language";
-
-const BINARY_BITS_PER_COLUMN = 320;
-const BINARY_COLUMN_COUNT = 56;
-
-const binaryColumns = Array.from({ length: BINARY_COLUMN_COUNT }, (_, column) => {
-  const trailLength = 7 + ((column * 5) % 12);
-  const gapLength = 16 + ((column * 7) % 24);
-  const cycleLength = trailLength + gapLength;
-  const phase = (column * 17) % cycleLength;
-
-  return {
-    id: column,
-    delay: `${-((column % 11) * 0.17)}s`,
-    duration: `${2.2 + (column % 7) * 0.18}s`,
-    bits: Array.from({ length: BINARY_BITS_PER_COLUMN }, (_, bit) => {
-      const trailPosition = (bit + phase) % cycleLength;
-
-      if (trailPosition >= trailLength) {
-        return " ";
-      }
-
-      return (column + bit) % 3 === 0 ? "1" : "0";
-    }).join(""),
-  };
-});
 
 let lineId = 0;
 
@@ -59,7 +46,7 @@ function nextLineId() {
 
 function createIntroLine(language: Language): TerminalLine {
   return {
-    id: nextLineId(),
+    id: 0,
     type: "system",
     lines: profile.intro[language],
   };
@@ -67,6 +54,26 @@ function createIntroLine(language: Language): TerminalLine {
 
 function normalizeCommand(value: string) {
   return value.trim().replace(/\s+/g, " ");
+}
+
+function wait(duration: number) {
+  return new Promise<void>((resolve) => window.setTimeout(resolve, duration));
+}
+
+function shouldAnimateTerminal() {
+  return !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+}
+
+function updateResultLine(
+  lines: TerminalLine[],
+  resultId: number,
+  update: (visibleLines: TerminalOutput[]) => TerminalOutput[],
+) {
+  return lines.map((line) =>
+    line.id === resultId && line.type === "result"
+      ? { ...line, lines: update(line.lines) }
+      : line,
+  );
 }
 
 function resolveCommand(value: string) {
@@ -162,6 +169,9 @@ export default function Home() {
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const pendingScrollLineIdRef = useRef<number | null>(null);
+  const activeRunRef = useRef(0);
+  const isBusyRef = useRef(false);
+  const dismissIntro = useCallback(() => setIntroVisible(false), []);
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
@@ -188,18 +198,6 @@ export default function Home() {
       .querySelector('meta[name="description"]')
       ?.setAttribute("content", copy[language].pageDescription);
   }, [isHydrated, language]);
-
-  useEffect(() => {
-    const skipIntro = () => setIntroVisible(false);
-
-    window.addEventListener("pointerdown", skipIntro);
-    window.addEventListener("keydown", skipIntro);
-
-    return () => {
-      window.removeEventListener("pointerdown", skipIntro);
-      window.removeEventListener("keydown", skipIntro);
-    };
-  }, []);
 
   useEffect(() => {
     const pendingScrollLineId = pendingScrollLineIdRef.current;
@@ -232,14 +230,20 @@ export default function Home() {
     }
   }, [introVisible]);
 
+  useEffect(() => {
+    return () => {
+      activeRunRef.current += 1;
+    };
+  }, []);
+
   const activeCopy = copy[language];
 
   const promptButtons = useMemo(() => activeCopy.promptButtons, [activeCopy]);
 
-  function runCommand(rawCommand: string) {
+  async function runCommand(rawCommand: string, typeCommand = false) {
     const commandText = normalizeCommand(rawCommand);
 
-    if (!commandText || isLoading) {
+    if (!commandText || isBusyRef.current) {
       return;
     }
 
@@ -251,34 +255,193 @@ export default function Home() {
       return;
     }
 
+    const runId = activeRunRef.current + 1;
+    activeRunRef.current = runId;
+    isBusyRef.current = true;
+    setIsLoading(true);
+
+    const animate = shouldAnimateTerminal();
+
+    if (typeCommand && animate) {
+      setInput("");
+
+      for (let index = 1; index <= commandText.length; index += 1) {
+        if (activeRunRef.current !== runId) {
+          return;
+        }
+
+        setInput(commandText.slice(0, index));
+        await wait(COMMAND_KEYSTROKE_MS);
+      }
+
+      await wait(110);
+    }
+
     const commandLanguage = command === "en" ? "en" : command === "zh" ? "zh" : language;
     const loadingLanguage = language;
     const commandLineId = nextLineId();
     const loadingId = nextLineId();
 
     setInput("");
-    setIsLoading(true);
     setLines((currentLines) => [
       ...currentLines,
       { id: commandLineId, type: "command", text: commandText },
       { id: loadingId, type: "loading", text: commandLoadingText(command, loadingLanguage) },
     ]);
 
-    window.setTimeout(() => {
-      if (command === "en" || command === "zh") {
-        setLanguage(command);
-      }
+    await wait(animate ? LOADING_DURATION_MS : 0);
 
-      if (command === "projects") {
-        pendingScrollLineIdRef.current = commandLineId;
-      }
+    if (activeRunRef.current !== runId) {
+      return;
+    }
 
+    if (command === "en" || command === "zh") {
+      setLanguage(command);
+    }
+
+    if (command === "projects") {
+      pendingScrollLineIdRef.current = commandLineId;
+    }
+
+    const resultId = nextLineId();
+    const result = buildCommandResult(command, commandLanguage);
+
+    if (!animate) {
       setLines((currentLines) => [
         ...currentLines.filter((line) => line.id !== loadingId),
-        { id: nextLineId(), type: "result", lines: buildCommandResult(command, commandLanguage) },
+        { id: resultId, type: "result", lines: result },
       ]);
-      setIsLoading(false);
-    }, LOADING_DURATION_MS);
+    } else {
+      setLines((currentLines) => [
+        ...currentLines.filter((line) => line.id !== loadingId),
+        { id: resultId, type: "result", lines: [], isStreaming: true },
+      ]);
+
+      for (const output of result) {
+        if (activeRunRef.current !== runId) {
+          return;
+        }
+
+        if (typeof output === "string") {
+          setLines((currentLines) =>
+            updateResultLine(currentLines, resultId, (visibleLines) => [...visibleLines, ""]),
+          );
+
+          for (
+            let length = OUTPUT_CHARS_PER_TICK;
+            length <= output.length + OUTPUT_CHARS_PER_TICK;
+            length += OUTPUT_CHARS_PER_TICK
+          ) {
+            if (activeRunRef.current !== runId) {
+              return;
+            }
+
+            const visibleText = output.slice(0, length);
+            setLines((currentLines) =>
+              updateResultLine(currentLines, resultId, (visibleLines) => [
+                ...visibleLines.slice(0, -1),
+                visibleText,
+              ]),
+            );
+
+            if (visibleText.length === output.length) {
+              break;
+            }
+
+            await wait(OUTPUT_TICK_MS);
+          }
+        } else if ("contact" in output) {
+          const completeText = `${output.contact.label}: ${output.contact.value}`;
+
+          setLines((currentLines) =>
+            updateResultLine(currentLines, resultId, (visibleLines) => [
+              ...visibleLines,
+              { ...output, visibleLength: 0 },
+            ]),
+          );
+
+          for (
+            let length = OUTPUT_CHARS_PER_TICK;
+            length <= completeText.length + OUTPUT_CHARS_PER_TICK;
+            length += OUTPUT_CHARS_PER_TICK
+          ) {
+            if (activeRunRef.current !== runId) {
+              return;
+            }
+
+            const visibleLength = Math.min(length, completeText.length);
+            setLines((currentLines) =>
+              updateResultLine(currentLines, resultId, (visibleLines) => [
+                ...visibleLines.slice(0, -1),
+                { ...output, visibleLength },
+              ]),
+            );
+
+            if (visibleLength === completeText.length) {
+              break;
+            }
+
+            await wait(OUTPUT_TICK_MS);
+          }
+        } else {
+          let visibleLabels: string[] = [];
+
+          setLines((currentLines) =>
+            updateResultLine(currentLines, resultId, (visibleLines) => [
+              ...visibleLines,
+              { ...output, visibleLabels },
+            ]),
+          );
+
+          for (const link of output.links) {
+            const completedLabels = visibleLabels;
+
+            for (
+              let length = OUTPUT_CHARS_PER_TICK;
+              length <= link.label.length + OUTPUT_CHARS_PER_TICK;
+              length += OUTPUT_CHARS_PER_TICK
+            ) {
+              if (activeRunRef.current !== runId) {
+                return;
+              }
+
+              const visibleLabel = link.label.slice(0, length);
+              const nextVisibleLabels = [...completedLabels, visibleLabel];
+
+              setLines((currentLines) =>
+                updateResultLine(currentLines, resultId, (visibleLines) => [
+                  ...visibleLines.slice(0, -1),
+                  { ...output, visibleLabels: nextVisibleLabels },
+                ]),
+              );
+
+              if (visibleLabel.length === link.label.length) {
+                visibleLabels = nextVisibleLabels;
+                break;
+              }
+
+              await wait(OUTPUT_TICK_MS);
+            }
+
+            await wait(OUTPUT_LINE_PAUSE_MS);
+          }
+        }
+
+        await wait(OUTPUT_LINE_PAUSE_MS);
+      }
+
+      setLines((currentLines) =>
+        currentLines.map((line) =>
+          line.id === resultId && line.type === "result"
+            ? { ...line, isStreaming: false }
+            : line,
+        ),
+      );
+    }
+
+    isBusyRef.current = false;
+    setIsLoading(false);
+    window.requestAnimationFrame(() => inputRef.current?.focus());
   }
 
   function onSubmit(event: FormEvent<HTMLFormElement>) {
@@ -314,7 +477,7 @@ export default function Home() {
             <div className="flex items-center gap-3 text-xs text-terminal-dim">
               <button
                 type="button"
-                onClick={() => runCommand(activeCopy.languageCommand)}
+                onClick={() => runCommand(activeCopy.languageCommand, true)}
                 disabled={isLoading}
                 aria-label={activeCopy.languageSwitchLabel}
                 className="rounded-[4px] border border-transparent px-1.5 py-1 transition hover:border-terminal-cyan hover:text-terminal-cyan focus:outline-none focus:ring-2 focus:ring-terminal-cyan/60 disabled:cursor-not-allowed disabled:opacity-50"
@@ -330,7 +493,7 @@ export default function Home() {
             <div
               ref={scrollViewportRef}
               className="flex-1 overflow-y-auto px-4 py-5 text-sm leading-6 sm:px-6 sm:py-6 sm:text-[15px]"
-              aria-live="polite"
+              aria-live={isLoading ? "off" : "polite"}
             >
               {lines.map((line) => (
                 <TerminalEntry key={line.id} line={line} />
@@ -347,7 +510,7 @@ export default function Home() {
                   <button
                     key={prompt.command}
                     type="button"
-                    onClick={() => runCommand(prompt.command)}
+                    onClick={() => runCommand(prompt.command, true)}
                     disabled={isLoading}
                     className="min-h-10 rounded-[6px] border border-terminal-line bg-[#081916] px-3 py-2 text-left text-xs text-terminal-cyan transition hover:border-terminal-cyan hover:bg-terminal-cyan/10 focus:outline-none focus:ring-2 focus:ring-terminal-cyan/60 disabled:cursor-not-allowed disabled:opacity-50 sm:text-[13px]"
                   >
@@ -368,9 +531,10 @@ export default function Home() {
                   id="terminal-input"
                   value={input}
                   onChange={(event) => setInput(event.target.value)}
-                  disabled={isLoading}
+                  readOnly={isLoading}
+                  aria-disabled={isLoading}
                   placeholder={activeCopy.inputPlaceholder}
-                  className="min-w-0 flex-1 bg-transparent text-sm text-[#e7fff6] caret-terminal-green outline-none placeholder:text-terminal-dim disabled:opacity-50 sm:text-[15px]"
+                  className="min-w-0 flex-1 bg-transparent text-sm text-[#e7fff6] caret-terminal-green outline-none placeholder:text-terminal-dim sm:text-[15px]"
                   autoComplete="off"
                   spellCheck={false}
                 />
@@ -384,7 +548,7 @@ export default function Home() {
         <BinaryIntro
           status={activeCopy.introStatus}
           skipLabel={activeCopy.introSkipLabel}
-          onSkip={() => setIntroVisible(false)}
+          onSkip={dismissIntro}
         />
       ) : null}
     </main>
@@ -417,37 +581,56 @@ function TerminalEntry({ line }: { line: TerminalLine }) {
         if (typeof output !== "string") {
           if ("contact" in output) {
             const external = output.contact.href.startsWith("http");
+            const label = `${output.contact.label}: `;
+            const completeLength = label.length + output.contact.value.length;
+            const visibleLength = output.visibleLength ?? completeLength;
+            const visibleLabel = label.slice(0, visibleLength);
+            const visibleValue = output.contact.value.slice(
+              0,
+              Math.max(0, visibleLength - label.length),
+            );
 
             return (
               <p key={`${line.id}-${index}`}>
-                {output.contact.label}: {" "}
-                <a
-                  href={output.contact.href}
-                  target={external ? "_blank" : undefined}
-                  rel={external ? "noreferrer" : undefined}
-                  className="text-terminal-cyan underline decoration-terminal-line underline-offset-4 transition hover:decoration-terminal-cyan focus:outline-none focus:ring-2 focus:ring-terminal-cyan/60"
-                >
-                  {output.contact.value}
-                </a>
+                {visibleLabel}
+                {visibleValue ? (
+                  <a
+                    href={output.contact.href}
+                    target={external ? "_blank" : undefined}
+                    rel={external ? "noreferrer" : undefined}
+                    className="text-terminal-cyan underline decoration-terminal-line underline-offset-4 transition hover:decoration-terminal-cyan focus:outline-none focus:ring-2 focus:ring-terminal-cyan/60"
+                  >
+                    {visibleValue}
+                  </a>
+                ) : null}
               </p>
             );
           }
 
+          const visibleLabels =
+            output.visibleLabels ?? output.links.map((link) => link.label);
+
           return (
             <div key={`${line.id}-${index}`} className="my-2 ml-4 flex flex-wrap gap-2">
-              {output.links.map((link) => (
-                <a
-                  key={link.href}
-                  href={link.href}
-                  target="_blank"
-                  rel="noreferrer"
-                  aria-label={link.ariaLabel}
-                  className="inline-flex items-center gap-1.5 rounded-[4px] border border-terminal-line bg-terminal-green/5 px-2.5 py-1 text-sm text-terminal-cyan transition hover:border-terminal-cyan hover:bg-terminal-cyan/10 focus:outline-none focus:ring-2 focus:ring-terminal-cyan/60"
-                >
-                  {link.label}
-                  <span aria-hidden="true">↗</span>
-                </a>
-              ))}
+              {visibleLabels.map((visibleLabel, linkIndex) => {
+                const link = output.links[linkIndex];
+
+                return (
+                  <a
+                    key={link.href}
+                    href={link.href}
+                    target="_blank"
+                    rel="noreferrer"
+                    aria-label={link.ariaLabel}
+                    className="inline-flex items-center gap-1.5 rounded-[4px] border border-terminal-line bg-terminal-green/5 px-2.5 py-1 text-sm text-terminal-cyan transition hover:border-terminal-cyan hover:bg-terminal-cyan/10 focus:outline-none focus:ring-2 focus:ring-terminal-cyan/60"
+                  >
+                    {visibleLabel}
+                    {visibleLabel.length === link.label.length ? (
+                      <span aria-hidden="true">↗</span>
+                    ) : null}
+                  </a>
+                );
+              })}
             </div>
           );
         }
@@ -460,6 +643,11 @@ function TerminalEntry({ line }: { line: TerminalLine }) {
           <div key={`${line.id}-${index}`} className="h-3" />
         );
       })}
+      {line.type === "result" && line.isStreaming ? (
+        <span className="animate-pulse text-terminal-green" aria-hidden="true">
+          ▋
+        </span>
+      ) : null}
     </div>
   );
 }
@@ -473,31 +661,36 @@ function BinaryIntro({
   skipLabel: string;
   onSkip: () => void;
 }) {
+  useEffect(() => {
+    const autoDismissTimer = window.setTimeout(onSkip, INTRO_DURATION_MS);
+    return () => window.clearTimeout(autoDismissTimer);
+  }, [onSkip]);
+
   return (
     <button
       type="button"
       onClick={onSkip}
-      onKeyDown={onSkip}
+      onKeyDown={(event) => {
+        if (event.key === "Escape" || event.key === "Enter") {
+          event.preventDefault();
+          onSkip();
+          return;
+        }
+
+        if (event.key === " ") {
+          event.preventDefault();
+        }
+      }}
+      onKeyUp={(event) => {
+        if (event.key === " ") {
+          event.preventDefault();
+        }
+      }}
       className="fixed inset-0 z-50 flex cursor-pointer items-center justify-center overflow-hidden bg-black text-terminal-green focus:outline-none"
       aria-label={skipLabel}
       autoFocus
     >
-      <div className="absolute inset-0 flex justify-around opacity-80" aria-hidden="true">
-        {binaryColumns.map((column) => (
-          <span
-            key={column.id}
-            className="binary-rain-column animate-[binary-fall_var(--duration)_linear_infinite] whitespace-pre text-left text-[clamp(13px,0.9vw,18px)] leading-[1.15] text-terminal-green/70 [text-shadow:0_0_14px_rgba(73,255,154,0.85)]"
-            style={
-              {
-                "--duration": column.duration,
-                animationDelay: column.delay,
-              } as React.CSSProperties
-            }
-          >
-            {column.bits.split("").join("\n")}
-          </span>
-        ))}
-      </div>
+      <TerminalRain />
       <div className="relative z-10 border border-terminal-green/40 bg-black/75 px-5 py-3 text-sm uppercase tracking-[0.24em] text-terminal-cyan shadow-terminal">
         {status}
       </div>

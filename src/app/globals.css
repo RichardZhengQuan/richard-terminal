@@ -33,41 +33,20 @@ input {
   color: #ffffff;
 }
 
-@keyframes binary-fall {
-  0% {
-    transform: translateY(-50%);
-    opacity: 0.45;
-  }
-
-  18% {
-    opacity: 1;
-  }
-
-  100% {
-    transform: translateY(0);
-    opacity: 0.35;
-  }
-}
-
-@keyframes not-found-rain {
+@keyframes terminal-rain {
   from {
-    transform: translateY(-18vh);
+    transform: translate3d(var(--rain-start-x, 0), -18vh, 0);
   }
 
   to {
-    transform: translateY(108vh);
+    transform: translate3d(var(--rain-end-x, 0), 116vh, 0);
   }
 }
 
-.not-found-rain-column {
-  animation: not-found-rain var(--rain-duration) linear infinite;
+.terminal-rain-column {
+  animation: terminal-rain var(--rain-duration) linear infinite;
   text-shadow: 0 0 12px rgba(73, 255, 154, 0.5);
-}
-
-@media (max-width: 639px) {
-  .binary-rain-column:nth-child(even) {
-    display: none;
-  }
+  will-change: transform;
 }
 
 @media (prefers-reduced-motion: reduce) {
