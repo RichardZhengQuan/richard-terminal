@@ -158,8 +158,10 @@ export default function Home() {
   const [introVisible, setIntroVisible] = useState(true);
   const [isHydrated, setIsHydrated] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const scrollViewportRef = useRef<HTMLDivElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const pendingScrollLineIdRef = useRef<number | null>(null);
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
@@ -200,6 +202,27 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
+    const pendingScrollLineId = pendingScrollLineIdRef.current;
+
+    if (pendingScrollLineId !== null) {
+      const viewport = scrollViewportRef.current;
+      const target = viewport?.querySelector<HTMLElement>(
+        `[data-terminal-line-id="${pendingScrollLineId}"]`,
+      );
+
+      if (viewport && target) {
+        const viewportRect = viewport.getBoundingClientRect();
+        const targetRect = target.getBoundingClientRect();
+
+        viewport.scrollTo({
+          top: viewport.scrollTop + targetRect.top - viewportRect.top - 20,
+          behavior: "smooth",
+        });
+        pendingScrollLineIdRef.current = null;
+        return;
+      }
+    }
+
     bottomRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
   }, [lines]);
 
@@ -230,19 +253,24 @@ export default function Home() {
 
     const commandLanguage = command === "en" ? "en" : command === "zh" ? "zh" : language;
     const loadingLanguage = language;
+    const commandLineId = nextLineId();
     const loadingId = nextLineId();
 
     setInput("");
     setIsLoading(true);
     setLines((currentLines) => [
       ...currentLines,
-      { id: nextLineId(), type: "command", text: commandText },
+      { id: commandLineId, type: "command", text: commandText },
       { id: loadingId, type: "loading", text: commandLoadingText(command, loadingLanguage) },
     ]);
 
     window.setTimeout(() => {
       if (command === "en" || command === "zh") {
         setLanguage(command);
+      }
+
+      if (command === "projects") {
+        pendingScrollLineIdRef.current = commandLineId;
       }
 
       setLines((currentLines) => [
@@ -300,6 +328,7 @@ export default function Home() {
 
           <div className="flex h-[min(72vh,680px)] min-h-[540px] flex-col sm:h-[min(76vh,720px)]">
             <div
+              ref={scrollViewportRef}
               className="flex-1 overflow-y-auto px-4 py-5 text-sm leading-6 sm:px-6 sm:py-6 sm:text-[15px]"
               aria-live="polite"
             >
@@ -365,18 +394,25 @@ export default function Home() {
 function TerminalEntry({ line }: { line: TerminalLine }) {
   if (line.type === "command") {
     return (
-      <div className="mb-4 text-terminal-cyan">
+      <div data-terminal-line-id={line.id} className="mb-4 text-terminal-cyan">
         <span className="text-terminal-green">&gt;</span> {line.text}
       </div>
     );
   }
 
   if (line.type === "loading") {
-    return <div className="mb-4 animate-pulse text-terminal-dim">{line.text}</div>;
+    return (
+      <div data-terminal-line-id={line.id} className="mb-4 animate-pulse text-terminal-dim">
+        {line.text}
+      </div>
+    );
   }
 
   return (
-    <div className={line.type === "system" ? "mb-6 text-terminal-green" : "mb-6 text-[#d9fff0]"}>
+    <div
+      data-terminal-line-id={line.id}
+      className={line.type === "system" ? "mb-6 text-terminal-green" : "mb-6 text-[#d9fff0]"}
+    >
       {line.lines.map((output, index) => {
         if (typeof output !== "string") {
           if ("contact" in output) {
