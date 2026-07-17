@@ -30,6 +30,24 @@ export const profile = {
   },
   projects: [
     {
+      name: "OneMind",
+      website: "https://onemind.team/",
+      github: "https://github.com/RichardZhengQuan/OneMind",
+      description: {
+        en: "A team AI memory and governance layer that turns shared knowledge into reviewed, versioned context and keeps it synchronized across Codex, Claude Code, Cursor, OpenClaw, and other tools.",
+        zh: "面向团队的 AI 记忆与治理层，将共享知识整理为经过审核、可版本管理的上下文，并持续同步到 Codex、Claude Code、Cursor、OpenClaw 等工具。",
+      },
+    },
+    {
+      name: "usAIge",
+      website: "https://pmrichq.com/project/usaige/",
+      github: "https://github.com/RichardZhengQuan/usAIge",
+      description: {
+        en: "Always-on macOS HUD for Codex and ChatGPT usage limits.",
+        zh: "常驻显示 Codex 和 ChatGPT 使用额度的 macOS 浮窗。",
+      },
+    },
+    {
       name: "Clip Loop",
       website: "https://pmrichq.com/project/cliploop/",
       github: "https://github.com/RichardZhengQuan/Cliploop",
@@ -55,12 +73,11 @@ export const profile = {
       },
     },
     {
-      name: "usAIge",
-      website: "https://pmrichq.com/project/usaige/",
-      github: "https://github.com/RichardZhengQuan/usAIge",
+      name: "SwiftUI Native Design Skill",
+      github: "https://github.com/RichardZhengQuan/swiftui-native-design-skill",
       description: {
-        en: "Always-on macOS HUD for Codex and ChatGPT usage limits.",
-        zh: "常驻显示 Codex 和 ChatGPT 使用额度的 macOS 浮窗。",
+        en: "Codex skill for designing and visually verifying native SwiftUI interfaces.",
+        zh: "用于设计和视觉验证原生 SwiftUI 界面的 Codex 技能。",
       },
     },
     {
@@ -85,22 +102,6 @@ export const profile = {
       description: {
         en: "Adaptive English practice with learner profiles and guided sessions.",
         zh: "根据学习者画像提供引导式练习的自适应英语学习产品。",
-      },
-    },
-    {
-      name: "OneMind",
-      github: "https://github.com/RichardZhengQuan/OneMind",
-      description: {
-        en: "Shared, versioned memory for keeping a team’s AI tools aligned.",
-        zh: "让团队的多个 AI 工具保持一致的共享、可版本管理的记忆系统。",
-      },
-    },
-    {
-      name: "SwiftUI Native Design Skill",
-      github: "https://github.com/RichardZhengQuan/swiftui-native-design-skill",
-      description: {
-        en: "Codex skill for designing and visually verifying native SwiftUI interfaces.",
-        zh: "用于设计和视觉验证原生 SwiftUI 界面的 Codex 技能。",
       },
     },
     {
