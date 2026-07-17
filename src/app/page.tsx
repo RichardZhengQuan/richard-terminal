@@ -462,19 +462,8 @@ function BinaryIntro({
           </span>
         ))}
       </div>
-      <div className="relative z-10 flex flex-col items-center gap-5">
-        <Image
-          src="/logo.png"
-          width={128}
-          height={128}
-          alt=""
-          priority
-          unoptimized
-          className="rounded-[28px] shadow-[0_0_42px_rgba(73,255,154,0.3)] ring-1 ring-terminal-green/50"
-        />
-        <div className="border border-terminal-green/40 bg-black/75 px-5 py-3 text-sm uppercase tracking-[0.24em] text-terminal-cyan shadow-terminal">
-          {status}
-        </div>
+      <div className="relative z-10 border border-terminal-green/40 bg-black/75 px-5 py-3 text-sm uppercase tracking-[0.24em] text-terminal-cyan shadow-terminal">
+        {status}
       </div>
     </button>
   );
