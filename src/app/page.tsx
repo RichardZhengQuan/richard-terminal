@@ -450,11 +450,11 @@ export default function Home() {
   }
 
   return (
-    <main className="relative min-h-screen overflow-hidden bg-terminal-bg px-4 py-6 font-mono text-[#d9fff0] sm:px-6 lg:px-8">
+    <main className="app-viewport relative overflow-hidden bg-terminal-bg px-4 py-6 font-mono text-[#d9fff0] sm:px-6 lg:px-8">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_20%,rgba(55,231,255,0.12),transparent_32%),linear-gradient(180deg,rgba(2,4,3,0)_0%,rgba(2,4,3,0.96)_86%)]" />
       <div className="pointer-events-none absolute inset-0 opacity-[0.08] [background-image:linear-gradient(rgba(73,255,154,0.28)_1px,transparent_1px)] [background-size:100%_4px]" />
 
-      <section className="relative z-10 flex min-h-[calc(100vh-3rem)] items-center justify-center">
+      <section className="app-viewport-content relative z-10 flex items-center justify-center">
         <div className="w-full max-w-5xl overflow-hidden rounded-[8px] border border-terminal-line bg-terminal-shell/95 shadow-terminal backdrop-blur">
           <header className="flex flex-col gap-3 border-b border-terminal-line bg-black/40 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-5">
             <div className="flex items-center gap-3">

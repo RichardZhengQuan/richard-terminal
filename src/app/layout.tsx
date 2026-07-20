@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 
 const title = "Richard's Terminal";
@@ -28,6 +28,11 @@ export const metadata: Metadata = {
     description,
     images: ["/og.png"],
   },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#020403",
+  viewportFit: "cover",
 };
 
 export default function RootLayout({
