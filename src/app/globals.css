@@ -13,14 +13,28 @@
 
 html,
 body {
+  width: 100%;
   min-height: 100%;
+  min-height: 100vh;
+  min-height: 100dvh;
   margin: 0;
-  background: #020403;
+  background-color: #020403;
 }
 
 body {
   color: #d9fff0;
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  overscroll-behavior-y: none;
+}
+
+.app-viewport {
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+.app-viewport-content {
+  min-height: calc(100vh - 3rem);
+  min-height: calc(100dvh - 3rem);
 }
 
 button,
