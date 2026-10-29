@@ -1,0 +1,33 @@
+{
+  "source_repository": "https://github.com/RichardZhengQuan/NEO",
+  "source_base_commit": "c232c269c37bd6592d24ac0eb70e5ca12368c11d",
+  "source_worktree_changes_sha256": {
+    "site/styles.css": "9e0e720b991c5589facc208a808b292c2568b3f7bd6a7091894ee3666ff64cfc"
+  },
+  "source_directory": "site",
+  "public_url": "https://pmrichq.com/project/neo/",
+  "files_sha256": {
+    "assets/figures/boy-ink.webp": "5fbe064b2d42d7c97706312d1982d03ec6dd2d5f26d46bdd9f894eeddae68353",
+    "assets/figures/boy.webp": "ba2b8e519fd1073bac930a36e455f6c6930352ca14b67b7d7a65e2de3cecf148",
+    "assets/figures/cat-ink.webp": "982afdb96917c8a9e6429c90e532076f06571210c1093b8757ceec1163bc9a8a",
+    "assets/figures/cat.webp": "8f35fa0d142da2126dd4c6fe76a54fac002293510e7035169a018ec9830b8b5d",
+    "assets/figures/dog-ink.webp": "e19e70525160ce254e5c8c0c1c7ac824af51da0ca711ee79c747a3e8057f3a3d",
+    "assets/figures/dog.webp": "f222c011c5822faec3649efbb4273cf2046c40936deec06bfeced2f41f9320d0",
+    "assets/figures/girl-ink.webp": "f19f424e6c1158721f217417d6fce069328d1864a0fe19537d3f0e5ec9302108",
+    "assets/figures/girl.webp": "f6a3321db1ae4ae8338021422ee8dd0c8307cc7873701d6b62280817e7642e19",
+    "assets/figures/robot-ink.webp": "50355196449e393f35c85d132f1805abe643ad11d2d3efe3bf51656d7047ab70",
+    "assets/figures/robot.webp": "a2bafe04e63a939840cd80c7d86841a92318fcbf7ba7c7583eb2dd266c85695b",
+    "assets/portraits/boy.webp": "3592e8b02e4241538f933ccad877d9181c7f3492a7d95f79447951db896451af",
+    "assets/portraits/cat.webp": "74fc2f7e3571361322f24cbdde6fd09c27b16bd35f422c1b61c2a1a204e7f080",
+    "assets/portraits/dog.webp": "c7f86d8cb3f56aee4a1d48662193309ba3c83747078fa31601c28cf32d0ce0de",
+    "assets/portraits/girl.webp": "6cf642e2f0c6a247a2da839299196faa790a7d093e5c0a770303ce58eec5c3b1",
+    "assets/portraits/robot.webp": "3d5d00ab72ab30b970284a0cbcde85d8057ec9166ac4fe18ca8c3f729c54d485",
+    "favicon.svg": "0fed1361b5bfe79174426167767f9b71066221be1a7c60c8bb7705f1eb8e9de1",
+    "index.html": "719880dc8d2792a596c3b586570f355e0f51b977f95d72080ea27435966b0cad",
+    "main.js": "dbd2b56322defaa89e1b0ff06dc2e900b8e3d69d9f29fc9326b232b138b85b8d",
+    "styles.css": "9e0e720b991c5589facc208a808b292c2568b3f7bd6a7091894ee3666ff64cfc"
+  },
+  "hosting_adjustments": {
+    "2026-10-29": "Added VibeLoft telemetry to the public NEO homepage only; original NEO application source is unchanged."
+  }
+}
