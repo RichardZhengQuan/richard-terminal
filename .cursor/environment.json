@@ -1,0 +1,5 @@
+{
+  "name": "richard-terminal",
+  "install": "set -euo pipefail\nexport COREPACK_ENABLE_DOWNLOAD_PROMPT=0\nif [ -d \"$HOME/.nvm/versions/node\" ]; then\n  NVM_BIN=$(find \"$HOME/.nvm/versions/node\" -mindepth 2 -maxdepth 2 -type d -name bin | sort -V | tail -1)\n  if [ -n \"$NVM_BIN\" ]; then\n    export PATH=\"$NVM_BIN:$PATH\"\n  fi\nfi\nhash -r\ncorepack prepare pnpm@11.28.10 --activate\npnpm install --frozen-lockfile\n",
+  "start": "set -euo pipefail\nif [ -d \"$HOME/.nvm/versions/node\" ]; then\n  NVM_BIN=$(find \"$HOME/.nvm/versions/node\" -mindepth 2 -maxdepth 2 -type d -name bin | sort -V | tail -1)\n  if [ -n \"$NVM_BIN\" ]; then\n    export PATH=\"$NVM_BIN:$PATH\"\n  fi\nfi\nif curl -sf -o /dev/null --max-time 2 http://127.0.0.1:3000/; then\n  exit 0\nfi\nexec pnpm dev -- --hostname 0.0.0.0 --port 3000\n"
+}
