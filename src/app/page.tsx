@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useState, useSyncExternalStore, type ReactNode } from "react";
 import { getResume, type TimelineEntry } from "@/data/resume";
 import type { Language } from "@/data/personal";
 import ThemeSwitch from "./theme-switch";
@@ -8,6 +8,43 @@ import JourneyPath from "./journey-path";
 import FocusCards from "./focus-cards";
 
 const LANGUAGE_KEY = "richard-stage-language";
+const LEGACY_LANGUAGE_KEY = "richard-terminal-language";
+const LANGUAGE_CHANGE_EVENT = "richard-stage-language-change";
+// Keep this tab usable even when the browser blocks preference storage.
+let sessionLanguage: Language | null = null;
+
+function getLanguageSnapshot(): Language {
+  if (sessionLanguage !== null) return sessionLanguage;
+  try {
+    const saved = localStorage.getItem(LANGUAGE_KEY) ?? localStorage.getItem(LEGACY_LANGUAGE_KEY);
+    if (saved === "en" || saved === "zh") return saved;
+  } catch { /* Storage is optional. */ }
+  return "en";
+}
+
+function getServerLanguage(): Language {
+  return "en";
+}
+
+function subscribeLanguage(onChange: () => void) {
+  const onStorage = (event: StorageEvent) => {
+    if (event.key !== null && event.key !== LANGUAGE_KEY && event.key !== LEGACY_LANGUAGE_KEY) return;
+    sessionLanguage = null;
+    onChange();
+  };
+  window.addEventListener(LANGUAGE_CHANGE_EVENT, onChange);
+  window.addEventListener("storage", onStorage);
+  return () => {
+    window.removeEventListener(LANGUAGE_CHANGE_EVENT, onChange);
+    window.removeEventListener("storage", onStorage);
+  };
+}
+
+function selectLanguage(language: Language) {
+  sessionLanguage = language;
+  try { localStorage.setItem(LANGUAGE_KEY, language); } catch { /* The in-memory choice still works. */ }
+  window.dispatchEvent(new Event(LANGUAGE_CHANGE_EVENT));
+}
 
 function ExternalLink({ href, children, className = "u" }: { href: string; children: ReactNode; className?: string }) {
   const external = /^https?:/.test(href);
@@ -34,8 +71,7 @@ function EntryBody({ entry }: { entry: TimelineEntry }) {
 }
 
 export default function Home() {
-  const [language, setLanguage] = useState<Language>("en");
-  const [ready, setReady] = useState(false);
+  const language = useSyncExternalStore(subscribeLanguage, getLanguageSnapshot, getServerLanguage);
   const [scrolled, setScrolled] = useState(false);
   const model = useMemo(() => getResume(language), [language]);
   const labels = model.labels;
@@ -49,20 +85,10 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem(LANGUAGE_KEY) ?? localStorage.getItem("richard-terminal-language");
-      if (saved === "en" || saved === "zh") setLanguage(saved);
-    } catch { /* The page works when storage is unavailable. */ }
-    setReady(true);
-  }, []);
-
-  useEffect(() => {
-    if (!ready) return;
-    try { localStorage.setItem(LANGUAGE_KEY, language); } catch { /* Optional preference. */ }
     document.documentElement.lang = model.locale;
     document.title = model.pageTitle;
     document.querySelector('meta[name="description"]')?.setAttribute("content", model.description);
-  }, [language, ready, model]);
+  }, [model]);
 
   return <div className="resume-page">
     <div className="page-backdrop" aria-hidden="true"><p className={`ghost${language === "zh" ? " ghost-verse" : ""}`}>{language === "zh" ? <><span>兰荃自芳洁，</span><span>应世良优游</span></> : model.name}</p></div>
@@ -72,7 +98,7 @@ export default function Home() {
       <nav className="nav" aria-label={labels.nav}>
         <div className="nav-row" id="nav-links"><a href={`mailto:${model.email}`}>{language === "zh" ? "邮箱" : "Email"}</a>{socialLinks.map(link => <ExternalLink key={link.url} href={link.url} className="">{link.label}</ExternalLink>)}</div>
         <div className="nav-row" id="nav-preferences">
-          <span className="language-switch" role="group" aria-label={labels.language}><button type="button" lang="en" aria-pressed={language === "en"} onClick={() => setLanguage("en")}>EN</button><span aria-hidden="true">/</span><button type="button" lang="zh-CN" aria-pressed={language === "zh"} onClick={() => setLanguage("zh")}>中文</button></span>
+          <span className="language-switch" role="group" aria-label={labels.language}><button type="button" lang="en" aria-pressed={language === "en"} onClick={() => selectLanguage("en")}>EN</button><span aria-hidden="true">/</span><button type="button" lang="zh-CN" aria-pressed={language === "zh"} onClick={() => selectLanguage("zh")}>中文</button></span>
           <ThemeSwitch labels={labels} />
         </div>
       </nav>
