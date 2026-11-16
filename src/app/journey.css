@@ -1,0 +1,95 @@
+/* Journey owns its surface tokens so artwork cannot dictate text contrast. */
+.history {
+  --work-surface: 250, 250, 248;
+  --work-ink: #191c22;
+  --work-body: #484e58;
+  --work-line: #d9dde2;
+  --work-link-line: #737c8a;
+  --work-dark-art-opacity: .12;
+  padding: 64px 0;
+  scroll-margin-top: var(--header-clearance);
+}
+:root[data-theme="dark"] .history {
+  --work-surface: 23, 26, 32;
+  --work-ink: #f3f5f8;
+  --work-body: #bdc5d0;
+  --work-line: #383e48;
+  --work-link-line: #8e99a8;
+  --work-dark-art-opacity: 1;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .history {
+    --work-surface: 23, 26, 32;
+    --work-ink: #f3f5f8;
+    --work-body: #bdc5d0;
+    --work-line: #383e48;
+    --work-link-line: #8e99a8;
+    --work-dark-art-opacity: 1;
+  }
+}
+.history-list, .history-grid { margin: 0; padding: 0; list-style: none; }
+.history-entry { display: grid; grid-template-columns: 112px minmax(0, 1fr); }
+.history-date { padding: 28px 20px 0 0; color: var(--work-body); font-size: 12px; line-height: 1.6; font-variant-numeric: tabular-nums; }
+.history-content { position: relative; display: grid; gap: 20px; min-width: 0; padding: 0 0 36px 34px; border-left: 1px solid var(--work-line); }
+.history-content::before { content: ""; position: absolute; width: 7px; height: 7px; top: 34px; left: -4px; border-radius: 50%; background: var(--work-body); }
+.history-entry-current .history-content::before { width: 9px; height: 9px; left: -5px; }
+.history-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; align-items: stretch; }
+.history-grid-pair { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.history-grid > li { display: flex; min-width: 0; }
+.work-feature, .work-card {
+  position: relative; isolation: isolate; display: flex; flex-direction: column; gap: 24px;
+  min-width: 0; width: 100%; overflow: hidden;
+  color: var(--work-ink); background: rgb(var(--work-surface));
+  border: 1px solid var(--work-line); border-radius: 14px;
+  padding: 24px;
+}
+.work-feature { padding: clamp(28px, 4vw, 44px); box-shadow: var(--shadow-sm); gap: 32px; }
+/* All art is full bleed, including app icons: no inset dark squares. */
+.work-background { position: absolute; inset: -12px; width: calc(100% + 24px); height: calc(100% + 24px); object-fit: cover; object-position: center; filter: blur(6px); z-index: -2; }
+/* Dark artwork needs less ink behind the light scrim to retain a paper surface.
+   Dark mode keeps the original artwork opacity. */
+.work-art-dark .work-background { opacity: var(--work-dark-art-opacity); }
+/* The same 90% scrim bounds every pixel, including pure-black/white art.
+   Contrast is validated against those bounds, not just the average image. */
+.work-feature::after, .work-card::after {
+  content: ""; position: absolute; inset: 0; z-index: -1;
+  background: rgba(var(--work-surface), .9);
+  pointer-events: none;
+}
+.work-card-top { display: flex; align-items: center; gap: 14px; min-height: 44px; flex: none; }
+.work-icon { display: grid; place-items: center; width: 44px; height: 44px; flex: none; border-radius: 11px; background: #fff; border: 1px solid #e5e7eb; }
+.work-icon img { display: block; width: 28px; height: 28px; object-fit: contain; }
+.work-icon > span { color: #202020; font-size: 14px; font-weight: 500; letter-spacing: -.04em; }
+.work-eyebrow { font-size: 12px; letter-spacing: .08em; color: var(--work-body); }
+/* Identical top flow; only the action row consumes spare row height. */
+.work-card-copy { display: flex; flex-direction: column; flex: 1; min-width: 0; }
+.work-feature h3, .work-card h3 { margin: 0; color: var(--work-ink); font-weight: 400; line-height: 1.3; letter-spacing: -.02em; overflow-wrap: anywhere; }
+.work-feature h3 { font-size: clamp(36px, 5vw, 60px); font-weight: 300; line-height: 1.12; letter-spacing: -.04em; }
+.work-card h3 { font-size: 22px; }
+.work-summary { margin: 16px 0 24px; color: var(--work-body); font-size: 15px; font-weight: 400; line-height: 1.75; overflow-wrap: anywhere; }
+.work-feature .work-summary { max-width: 40em; font-size: 16px; line-height: 1.85; }
+.history-links { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 8px 20px; min-height: 32px; margin-top: auto; font-size: 13px; }
+/* Both actions share every state; underline doesn't depend on hover history. */
+.history .history-links a, .history .history-links a:visited { display: inline-flex; align-items: center; min-height: 32px; color: var(--work-ink); border: 0; text-decoration-line: underline; text-decoration-color: var(--work-link-line); text-decoration-thickness: 1px; text-underline-offset: 6px; }
+.history .history-links a:hover { color: var(--work-ink); text-decoration-color: currentColor; text-decoration-thickness: 2px; }
+.history a:focus-visible { outline: 2px solid var(--work-ink); outline-offset: 4px; border-radius: 2px; }
+.history .history-links a:focus-visible { text-decoration-color: currentColor; text-decoration-thickness: 2px; }
+.work-card h3 a:hover, .work-feature h3 a:hover { text-decoration: underline; text-underline-offset: 4px; }
+@media (max-width: 1000px) and (min-width: 561px) {
+  .history-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .history-grid > li:last-child:nth-child(odd) { grid-column: 1 / -1; }
+}
+@media (max-width: 720px) {
+  .history { padding: 48px 0; }
+  .history-entry { grid-template-columns: minmax(0, 1fr); padding-left: 5px; }
+  .history-date { padding: 0 0 12px 19px; border-left: 1px solid var(--work-line); }
+  .history-content { padding-left: 19px; padding-bottom: 28px; }
+  .history-content::before, .history-entry-current .history-content::before { top: -25px; }
+  .work-feature, .work-card { padding: 22px; }
+  .work-feature .work-summary { font-size: 15px; }
+}
+@media (max-width: 560px) {
+  .history-grid { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+  .history-links:empty { display: none; }
+}
+@media print { .history { display: none !important; } }
