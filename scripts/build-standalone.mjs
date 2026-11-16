@@ -97,6 +97,12 @@ async function buildStandalone() {
   if (javascript.includes("/project-card-assets/")) throw new Error("A card asset is missing from the standalone bundle.");
   const inlineJavascript = javascript.replace(/<\/script/gi, "<\\/script");
   const inlineCss = css.replace(/<\/style/gi, "<\\/style");
+  const iconData = async (filename, mime) => `data:${mime};base64,${(await readFile(path.join(projectDirectory, "public", filename))).toString("base64")}`;
+  const [faviconSvg, faviconPng, appleIcon] = await Promise.all([
+    iconData("favicon.svg", "image/svg+xml"),
+    iconData("favicon-32x32.png", "image/png"),
+    iconData("apple-touch-icon.png", "image/png"),
+  ]);
   const html = `<!doctype html>
 <html lang="en">
 <head>
@@ -107,6 +113,9 @@ async function buildStandalone() {
   <meta name="theme-color" content="#121211" media="(prefers-color-scheme: dark)">
   <meta name="description" content="Richard Q’s bilingual personal page and project portfolio. Explore practical AI tools, agent systems, native apps, and product design work.">
   <title>Richard Q — Product Manager &amp; Projects</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="${faviconPng}">
+  <link rel="icon" type="image/svg+xml" sizes="any" href="${faviconSvg}">
+  <link rel="apple-touch-icon" sizes="180x180" href="${appleIcon}">
   <style>${inlineCss}</style>
 </head>
 <body>
