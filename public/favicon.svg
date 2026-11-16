@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <title>Richard Q</title>
+  <style>
+    .tile { fill: #f7f7f5; stroke: #dededb; }
+    .mark { stroke: #17191c; }
+    @media (prefers-color-scheme: dark) {
+      .tile { fill: #1c1e22; stroke: #45474c; }
+      .mark { stroke: #f7f7f5; }
+    }
+  </style>
+  <rect class="tile" x="1" y="1" width="62" height="62" rx="15" stroke-width="1.25"/>
+  <g class="mark" fill="none" stroke-width="7.5" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="29.5" cy="28.5" r="16"/>
+    <path d="m33 33 16 16"/>
+  </g>
+</svg>
