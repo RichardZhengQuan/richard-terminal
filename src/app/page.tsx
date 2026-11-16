@@ -65,7 +65,6 @@ export default function Home() {
   }, [language, ready, model]);
 
   return <div className="resume-page">
-    <div className="page-backdrop" aria-hidden="true"><p className="ghost">{model.name}</p></div>
     <a className="skip" href="#cv">{labels.skip}</a>
     <header className={`top${scrolled ? " is-scrolled" : ""}`}>
       <a className="brand" href="#top">{model.name}</a>
@@ -86,6 +85,7 @@ export default function Home() {
         </div>
         <FocusCards language={language} />
       </div>
+      <div className="page-backdrop" aria-hidden="true"><p className="ghost">{model.name}</p></div>
     </section>
 
     <header className="print-head"><p className="ph-name">{model.name}</p><p className="ph-role">{model.role}</p><p className="ph-meta">{model.location && <span>{model.location}</span>}<span>{model.email}</span><span>{model.website.replace(/^https?:\/\//, "").replace(/\/$/, "")}</span>{socialLinks.map(link => <span key={link.url}>{link.url.replace(/^https?:\/\//, "")}</span>)}</p></header>
@@ -98,7 +98,7 @@ export default function Home() {
       </Block>)}
 
       <Block id="skills" title={labels.skills}><dl className="skills">{model.skills.map(skill => <div className="skill reveal" key={skill.group}><dt>{skill.group}</dt><dd>{skill.items.map(item => <span key={item}>{item}</span>)}</dd></div>)}</dl></Block>
-      <Block id="contact" title={labels.contact}><p className="contact-line reveal">{model.contact.headline}<br /><a href={`mailto:${model.email}`}>{model.email}</a></p><p className="contact-note reveal">{model.contact.note}</p><p className="contact-links reveal">{socialLinks.map(link => <ExternalLink key={link.url} href={link.url}>{link.label}</ExternalLink>)}</p></Block>
+      <Block id="contact" title={labels.contact}><p className="contact-line reveal">{model.contact.headline}</p><p className="contact-email reveal"><a href={`mailto:${model.email}`}>{model.email}</a></p><p className="contact-note reveal">{model.contact.note}</p><p className="contact-links reveal">{socialLinks.map(link => <ExternalLink key={link.url} href={link.url}>{link.label}</ExternalLink>)}</p></Block>
     </main>
     <footer className="foot"><div className="foot-in"><span>© {new Date().getFullYear()} {model.name}</span>{model.updated && <span>{labels.updated} {model.updated}</span>}<a href="#top">{labels.top} ↑</a></div></footer>
   </div>;

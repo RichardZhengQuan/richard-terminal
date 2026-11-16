@@ -4,10 +4,10 @@ import { useState, type CSSProperties } from "react";
 import type { Language } from "@/data/personal";
 
 const cards = [
-  { zh: "产品", en: "Product", color: "#e5eee8" },
-  { zh: "设计", en: "Design", color: "#eee8f5" },
-  { zh: "商业", en: "Business", color: "#f3e9d7" },
-  { zh: "科技", en: "Technology", color: "#e3eaf4" },
+  { zh: "产品", en: "Product", light: "#edf3ef", dark: "#353635" },
+  { zh: "设计", en: "Design", light: "#f3eff8", dark: "#363636" },
+  { zh: "商业", en: "Business", light: "#f7f0e3", dark: "#373633" },
+  { zh: "科技", en: "Technology", light: "#ebf0f7", dark: "#353636" },
 ];
 
 function CardDrawing({ index }: { index: number }) {
@@ -27,7 +27,7 @@ export default function FocusCards({ language }: { language: Language }) {
       const rank = (index - active + cards.length) % cards.length;
       const name = zh ? card.zh : card.en;
       const next = cards[(index + 1) % cards.length];
-      return <button key={card.en} type="button" className={`focus-card${rank === 0 ? " is-front" : ""}`} style={{ "--rank": rank, "--card-color": card.color, zIndex: cards.length - rank } as CSSProperties}
+      return <button key={card.en} type="button" className={`focus-card${rank === 0 ? " is-front" : ""}`} style={{ "--rank": rank, "--card-light": card.light, "--card-dark": card.dark, zIndex: cards.length - rank } as CSSProperties}
         aria-label={rank === 0 ? (zh ? `${name}，点击切换到${next.zh}` : `${name}, show ${next.en}`) : (zh ? `切换到${name}` : `Show ${name}`)}
         onClick={() => setActive(current => rank === 0 ? (current + 1) % cards.length : index)}>
         {zh && <span className="focus-card-caption">{card.en}</span>}
