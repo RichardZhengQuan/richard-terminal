@@ -40,7 +40,7 @@ export const careerExperiences: readonly CareerExperience[] = [
 const earlierChapters = [
   {
     id: "venture-hujiaotang", startDate: "2018-03",
-    heading: { zh: "创业", en: "Entrepreneurship" },
+    heading: { zh: "创业", en: "Startup" },
     cards: [
       { id: "hujiaotang-studio", title: { zh: "胡椒糖产品设计工作室", en: "Pepper Sugar Product Design Studio" } },
       { id: "qiketabi-company", title: { zh: "奇客塔比科技有限公司", en: "Qiketabi Technology Co., Ltd." } },
@@ -89,7 +89,7 @@ export function getJourney(language: Language) {
     labels: language === "zh" ? {
       title: "经历", entrepreneurship: "创业", details: "相关作品", currentSite: "当前网站",
     } : {
-      title: "Journey", entrepreneurship: "Entrepreneurship", details: "Related work", currentSite: "This website",
+      title: "Journey", entrepreneurship: "Startup", details: "Related work", currentSite: "This website",
     },
   };
 }
