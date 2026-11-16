@@ -1,5 +1,4 @@
 export type Language = "en" | "zh";
-export type CommandKey = "help" | "about" | "projects" | "now" | "contact";
 
 type LocalizedText = Record<Language, string>;
 
@@ -11,18 +10,18 @@ export type Project = {
 };
 
 export const profile = {
-  name: "Richard",
+  name: "Richard Q",
   title: {
     en: "Product manager building practical AI tools and product systems.",
     zh: "产品经理，专注于 AI 工具和产品系统。",
   },
   intro: {
-    en: ["Hello. I’m Richard.", "Public terminal ready.", "Run /help or select a command below."],
-    zh: ["你好，我是 Richard。", "公开终端已就绪。", "输入 /帮助，或选择下方命令。"],
+    en: ["Hello. I’m Richard Q.", "Public terminal ready.", "Run /help or select a command below."],
+    zh: ["你好，我是 Richard Q。", "公开终端已就绪。", "输入 /帮助，或选择下方命令。"],
   },
   about: {
-    en: "I’m Richard, a product manager focused on AI tools, agent systems, product design, and practical software.",
-    zh: "我是 Richard，一名产品经理，专注于 AI 工具、Agent 系统、产品设计和实用软件。",
+    en: "I’m Richard Q, a product manager focused on AI tools, agent systems, product design, and practical software.",
+    zh: "我是 Richard Q，一名产品经理，专注于 AI 工具、Agent 系统、产品设计和实用软件。",
   },
   now: {
     en: "Current focus: refining practical AI tools, native macOS and iOS apps, and this public terminal.",
@@ -32,10 +31,18 @@ export const profile = {
     {
       name: "OneMind",
       website: "https://onemind.team/",
-      github: "https://github.com/RichardZhengQuan/OneMind",
       description: {
         en: "A team AI memory and governance layer that turns shared knowledge into reviewed, versioned context and keeps it synchronized across Codex, Claude Code, Cursor, OpenClaw, and other tools.",
         zh: "面向团队的 AI 记忆与治理层，将共享知识整理为经过审核、可版本管理的上下文，并持续同步到 Codex、Claude Code、Cursor、OpenClaw 等工具。",
+      },
+    },
+    {
+      name: "NEO",
+      website: "https://pmrichq.com/project/neo/",
+      github: "https://github.com/RichardZhengQuan/NEO",
+      description: {
+        en: "An open-source personal AI that grows with you: one continuous timeline, associative memory, and a personality learned through conversation. Choose its AI and run it on your device or your own server.",
+        zh: "一个与你共同成长的开源个人 AI：连续的时间线、联想记忆，以及通过对话逐渐形成的个性。AI 由你选择，运行在你的设备或自己的服务器上。",
       },
     },
     {
@@ -50,7 +57,6 @@ export const profile = {
     {
       name: "Clip Loop",
       website: "https://pmrichq.com/project/cliploop/",
-      github: "https://github.com/RichardZhengQuan/Cliploop",
       description: {
         en: "Native macOS and iOS study app for caption-based clips and looped playback.",
         zh: "macOS 与 iOS 原生学习应用，支持字幕片段和循环播放。",
@@ -81,8 +87,16 @@ export const profile = {
       },
     },
     {
+      name: "AI Interaction Design Guidelines",
+      website: "https://pmrichq.com/project/ai-interaction-design-guidelines/",
+      github: "https://github.com/RichardZhengQuan/ai-interaction-design-guidelines",
+      description: {
+        en: "A bilingual guide to designing personal AI assistants that say less, show more, and keep people in control—with seven principles, interactive examples, and guidance for six device contexts.",
+        zh: "一份面向个人 AI 助手的中英文交互设计指南，通过七条原则、交互示例和六类设备的应用说明，让助手少说一点、多展示一点，并把控制权留给用户。",
+      },
+    },
+    {
       name: "TradeLens",
-      github: "https://github.com/RichardZhengQuan/Tradelensweb",
       description: {
         en: "Local dashboard for comparing FUTU holdings with target allocations.",
         zh: "用于对比 FUTU 实际持仓与目标配置的本地仪表盘。",
@@ -90,7 +104,6 @@ export const profile = {
     },
     {
       name: "Kechia",
-      github: "https://github.com/RichardZhengQuan/kechia",
       description: {
         en: "macOS AI utility for translating and explaining selected text or screen captures.",
         zh: "用于翻译和解释所选文本或屏幕截图的 macOS AI 工具。",
@@ -98,17 +111,16 @@ export const profile = {
     },
     {
       name: "Iris English",
-      github: "https://github.com/RichardZhengQuan/Iris-English",
       description: {
         en: "Adaptive English practice with learner profiles and guided sessions.",
         zh: "根据学习者画像提供引导式练习的自适应英语学习产品。",
       },
     },
     {
-      name: "Personal Terminal Page",
+      name: "A Little Theatre",
       description: {
-        en: "Terminal-style personal homepage with scripted command responses.",
-        zh: "使用预设命令响应的终端风格个人主页。",
+        en: "A bilingual personal showcase with page-by-page project transitions. The portfolio you’re exploring right now.",
+        zh: "一个双语个人作品集，以逐页翻动的方式展示项目。就是你现在正在浏览的这个网站。",
       },
     },
   ],
@@ -142,149 +154,4 @@ export const profile = {
   now: LocalizedText;
   projects: Project[];
   contact: Array<{ label: LocalizedText; value: string; href: string }>;
-};
-
-export const copy = {
-  en: {
-    status: "RICHARD'S TERMINAL",
-    languageLabel: "LANG: EN",
-    languageCommand: "set system language CN",
-    languageSwitchLabel: "Set terminal language to Chinese",
-    pageTitle: "Richard's Terminal",
-    pageDescription: "Richard's terminal-style personal homepage and project index.",
-    introStatus: "BOOTING TERMINAL",
-    introSkipLabel: "Skip startup sequence",
-    inputLabel: "Terminal command",
-    inputPlaceholder: "Enter a command...",
-    promptTitle: "Quick commands",
-    promptButtons: [
-      { label: "Current focus", command: "/now" },
-      { label: "Project index", command: "/projects" },
-      { label: "About", command: "/about" },
-      { label: "Contact", command: "/contact" },
-    ],
-    help: [
-      "Commands:",
-      "/help       List available commands.",
-      "/about      Show profile.",
-      "/projects   List projects.",
-      "/now        Show current focus.",
-      "/contact    Show contact details.",
-      "/zh         Set language to Chinese.",
-      "/en         Set language to English.",
-      "/clear      Clear the terminal.",
-    ],
-    loading: {
-      help: "Reading command index...",
-      about: "Reading profile...",
-      projects: "Reading project index...",
-      now: "Reading current status...",
-      contact: "Reading contact record...",
-      language: "Applying language setting...",
-      unknown: "Looking up command...",
-    },
-    foundProjects: (count: number) => `Loaded ${count} projects.`,
-    projectLinks: {
-      website: "Website",
-      github: "GitHub",
-      openWebsite: (project: string) => `Open ${project} website`,
-      openGithub: (project: string) => `Open ${project} on GitHub`,
-    },
-    languageSwitched: "Language set to English.",
-    unknown: "Command not found. Run /help to list available commands.",
-  },
-  zh: {
-    status: "RICHARD 终端",
-    languageLabel: "语言：中文",
-    languageCommand: "set system language EN",
-    languageSwitchLabel: "将终端语言设置为英文",
-    pageTitle: "Richard 终端",
-    pageDescription: "Richard 的终端风格个人主页与项目索引。",
-    introStatus: "终端启动中",
-    introSkipLabel: "跳过启动画面",
-    inputLabel: "终端命令",
-    inputPlaceholder: "输入命令...",
-    promptTitle: "快捷命令",
-    promptButtons: [
-      { label: "当前动态", command: "/现在" },
-      { label: "项目索引", command: "/项目" },
-      { label: "关于", command: "/关于我" },
-      { label: "联系方式", command: "/联系方式" },
-    ],
-    help: [
-      "可用命令：",
-      "/帮助       显示命令列表。",
-      "/关于我     显示个人简介。",
-      "/项目       列出项目。",
-      "/现在       显示当前动态。",
-      "/联系方式   显示联系方式。",
-      "/zh         将语言设置为中文。",
-      "/en         将语言设置为英文。",
-      "/清空       清空终端。",
-    ],
-    loading: {
-      help: "正在读取命令索引...",
-      about: "正在读取个人资料...",
-      projects: "正在读取项目索引...",
-      now: "正在读取当前状态...",
-      contact: "正在读取联系方式...",
-      language: "正在应用语言设置...",
-      unknown: "正在查找命令...",
-    },
-    foundProjects: (count: number) => `已加载 ${count} 个项目。`,
-    projectLinks: {
-      website: "网站",
-      github: "GitHub",
-      openWebsite: (project: string) => `打开 ${project} 网站`,
-      openGithub: (project: string) => `在 GitHub 上打开 ${project}`,
-    },
-    languageSwitched: "语言已设置为中文。",
-    unknown: "未找到该命令。输入 /帮助 查看可用命令。",
-  },
-} satisfies Record<
-  Language,
-  {
-    status: string;
-    languageLabel: string;
-    languageCommand: string;
-    languageSwitchLabel: string;
-    pageTitle: string;
-    pageDescription: string;
-    introStatus: string;
-    introSkipLabel: string;
-    inputLabel: string;
-    inputPlaceholder: string;
-    promptTitle: string;
-    promptButtons: Array<{ label: string; command: string }>;
-    help: string[];
-    loading: Record<CommandKey | "language" | "unknown", string>;
-    foundProjects: (count: number) => string;
-    projectLinks: {
-      website: string;
-      github: string;
-      openWebsite: (project: string) => string;
-      openGithub: (project: string) => string;
-    };
-    languageSwitched: string;
-    unknown: string;
-  }
->;
-
-export const commandAliases: Record<string, CommandKey | "clear" | "en" | "zh"> = {
-  "/help": "help",
-  "/about": "about",
-  "/projects": "projects",
-  "/now": "now",
-  "/contact": "contact",
-  "/clear": "clear",
-  "/en": "en",
-  "/zh": "zh",
-  "set system language en": "en",
-  "set system language cn": "zh",
-  "/帮助": "help",
-  "/关于我": "about",
-  "/项目": "projects",
-  "/现在": "now",
-  "/联系方式": "contact",
-  "/清空": "clear",
 };
