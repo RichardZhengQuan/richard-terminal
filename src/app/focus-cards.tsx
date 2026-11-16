@@ -4,10 +4,10 @@ import { useState, type CSSProperties } from "react";
 import type { Language } from "@/data/personal";
 
 const cards = [
-  { zh: "产品", en: "Product", light: "#edf3ef", dark: "#353635" },
-  { zh: "设计", en: "Design", light: "#f3eff8", dark: "#363636" },
-  { zh: "商业", en: "Business", light: "#f7f0e3", dark: "#373633" },
-  { zh: "科技", en: "Technology", light: "#ebf0f7", dark: "#353636" },
+  { zh: "产品", en: "Product", details: { zh: ["应用", "SaaS 服务"], en: ["Apps", "SaaS"] }, light: "#edf3ef", dark: "#353635" },
+  { zh: "设计", en: "Design", details: { zh: ["网站", "品牌"], en: ["Websites", "Brand"] }, light: "#f3eff8", dark: "#363636" },
+  { zh: "商业", en: "Business", details: { zh: ["策略", "增长"], en: ["Strategy", "Growth"] }, light: "#f7f0e3", dark: "#373633" },
+  { zh: "科技", en: "Technology", details: { zh: ["人工智能", "智能体"], en: ["AI", "Agents"] }, light: "#ebf0f7", dark: "#353636" },
 ];
 
 function CardDrawing({ index }: { index: number }) {
@@ -29,10 +29,13 @@ export default function FocusCards({ language }: { language: Language }) {
       const next = cards[(index + 1) % cards.length];
       return <button key={card.en} type="button" className={`focus-card${rank === 0 ? " is-front" : ""}`} style={{ "--rank": rank, "--card-light": card.light, "--card-dark": card.dark, zIndex: cards.length - rank } as CSSProperties}
         aria-label={rank === 0 ? (zh ? `${name}，点击切换到${next.zh}` : `${name}, show ${next.en}`) : (zh ? `切换到${name}` : `Show ${name}`)}
+        aria-describedby={rank === 0 ? `focus-details-${index}` : undefined}
         onClick={() => setActive(current => rank === 0 ? (current + 1) % cards.length : index)}>
-        {zh && <span className="focus-card-caption">{card.en}</span>}
         <CardDrawing index={index} />
         <span className="focus-card-name" lang={zh ? "zh-CN" : "en"}>{name}</span>
+        <span className="focus-card-details" id={`focus-details-${index}`}>
+          {card.details[language].map(detail => <span key={detail}>{detail}</span>)}
+        </span>
         <svg className="focus-next" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" aria-hidden="true"><path d="M4 12h15m-6-6 6 6-6 6" /></svg>
       </button>;
     })}
