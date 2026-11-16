@@ -11,17 +11,18 @@ export type Project = {
 
 export const profile = {
   name: "Richard Q",
+  localizedName: { en: "Richard Q", zh: "郑荃" },
   title: {
     en: "Product manager building practical AI tools and product systems.",
     zh: "产品经理，专注于 AI 工具和产品系统。",
   },
   intro: {
     en: ["Hello. I’m Richard Q.", "Public terminal ready.", "Run /help or select a command below."],
-    zh: ["你好，我是 Richard Q。", "公开终端已就绪。", "输入 /帮助，或选择下方命令。"],
+    zh: ["你好，我是郑荃。", "公开终端已就绪。", "输入 /帮助，或选择下方命令。"],
   },
   about: {
     en: "I’m Richard Q, a product manager focused on AI tools, agent systems, product design, and practical software.",
-    zh: "我是 Richard Q，一名产品经理，专注于 AI 工具、Agent 系统、产品设计和实用软件。",
+    zh: "我是郑荃，一名产品经理，专注于 AI 工具、Agent 系统、产品设计和实用软件。",
   },
   now: {
     en: "Current focus: refining practical AI tools, native macOS and iOS apps, and this public terminal.",
@@ -148,6 +149,7 @@ export const profile = {
   ],
 } satisfies {
   name: string;
+  localizedName: LocalizedText;
   title: LocalizedText;
   intro: Record<Language, string[]>;
   about: LocalizedText;

@@ -1,5 +1,6 @@
 import { profile, type Language } from "./personal";
 import { projectCategories } from "./stage";
+import { getJourney } from "./journey";
 
 export type EventKind = "work" | "project" | "education" | "honor";
 export type TimelineLayout = "full" | "picture" | "gallery" | "icon";
@@ -23,6 +24,8 @@ export interface TimelineEntry {
   quote?: string | { text: string; by?: string };
   icon?: string;
   placeholder?: boolean;
+  startDate?: string;
+  roles?: Array<{ id: string; title: string; scope?: string }>;
 }
 
 export interface ResumeLabels {
@@ -148,9 +151,10 @@ const copy = {
       { label: "Practice", value: "Observe · Build · Reflect" },
     ],
     skills: [
-      { group: "Product", items: ["Product thinking", "Product design", "AI interaction design"] },
-      { group: "AI", items: ["AI tools", "Agent systems", "Knowledge & governance"] },
-      { group: "Software", items: ["macOS & iOS products", "Web tools", "Developer workflows"] },
+      { group: "Product", items: ["Apps & SaaS", "Product discovery", "From idea to launch"] },
+      { group: "Design", items: ["Websites", "Brand identity", "Interaction design"] },
+      { group: "Business", items: ["Strategy", "Business models", "Growth"] },
+      { group: "Technology", items: ["AI tools", "Agent systems", "Developer workflows"] },
     ],
     workPlaceholder: {
       title: "Professional experience",
@@ -218,9 +222,10 @@ const copy = {
       { label: "修行", value: "观察 · 创造 · 沉淀" },
     ],
     skills: [
-      { group: "产品", items: ["产品思考", "产品设计", "AI 交互设计"] },
-      { group: "AI", items: ["AI 工具", "Agent 系统", "知识与治理"] },
-      { group: "软件", items: ["macOS 与 iOS 产品", "Web 工具", "开发者工作流"] },
+      { group: "产品", items: ["应用与 SaaS", "需求探索", "从想法到上线"] },
+      { group: "设计", items: ["网站设计", "品牌视觉", "交互设计"] },
+      { group: "商业", items: ["商业策略", "商业模式", "增长"] },
+      { group: "科技", items: ["AI 工具", "Agent 系统", "开发者工作流"] },
     ],
     workPlaceholder: {
       title: "职业经历",
@@ -236,8 +241,8 @@ const copy = {
       headline: "聊聊如何做出实用的产品。",
       note: "如果你有项目问题，或想交流产品设计、AI 工具与实用软件，可以给我发邮件，或通过下方链接找到我。",
     },
-    pageTitle: "Richard Q — 产品经理与个人作品",
-    description: "Richard Q 的双语个人主页与项目作品集，展示实用 AI 工具、Agent 系统、原生应用和产品设计。",
+    pageTitle: "郑荃 — 产品经理与个人作品",
+    description: "郑荃的双语个人主页与项目作品集，展示实用 AI 工具、Agent 系统、原生应用和产品设计。",
   },
 } satisfies Record<Language, {
   role: string;
@@ -254,6 +259,16 @@ const copy = {
 
 export function getResume(language: Language): ResumeModel {
   const c = copy[language];
+  const careers: TimelineEntry[] = getJourney(language).careers.map(career => ({
+    id: career.id,
+    kind: "work",
+    title: career.employer,
+    date: career.startDate.replace("-", "."),
+    startDate: career.startDate,
+    roles: career.roles,
+    highlights: career.roles.map(role => [role.title, role.scope].filter(Boolean).join(" · ")),
+    layout: "full",
+  }));
   const projects: TimelineEntry[] = profile.projects.map((project, index) => ({
     id: `project-${projectIds[index]}`,
     kind: "project",
@@ -268,8 +283,8 @@ export function getResume(language: Language): ResumeModel {
   return {
     language,
     locale: language === "zh" ? "zh-CN" : "en-US",
-    name: profile.name,
-    initials: "Rich Q",
+    name: profile.localizedName[language],
+    initials: language === "zh" ? "郑荃" : "Rich Q",
     role: c.role,
     tagline: c.tagline,
     about: profile.about[language],
@@ -278,15 +293,7 @@ export function getResume(language: Language): ResumeModel {
     links: profile.contact.map((link) => ({ label: link.label[language], url: link.href })),
     facts: c.facts,
     timeline: [
-      {
-        id: "work-details-to-add",
-        kind: "work",
-        ...c.workPlaceholder,
-        org: c.labels.placeholder,
-        date: c.labels.detailsToAdd,
-        layout: "full",
-        placeholder: true,
-      },
+      ...careers,
       ...projects,
     ],
     skills: c.skills,
